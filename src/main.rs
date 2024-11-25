@@ -365,6 +365,7 @@ async fn main() {
         .route("/", get(browser_html))
         .route_service("/style.css", ServeFile::new("static/style.css"))
         .route_service("/script.js", ServeFile::new("static/script.js"))
+        .route_service("/tar_writer.js", ServeFile::new("static/tar_writer.js"))
         .route("/multipart", post(redirect_post_mulipart_form))
         .route("/", post(redirect))
         .with_state(app_state);

@@ -1,3 +1,5 @@
+import TarWriter from './tar_writer.js'
+
 pageSetup();
 
 function pageSetup() {
@@ -71,6 +73,10 @@ function pageSetup() {
 
         showUserInfo("");
     });
+
+    document.getElementById('download-wicked-files-button').addEventListener('click', function(event) {
+        downloadFiles();
+    });
 }
 
 function showUserInfo(text) {
@@ -105,6 +111,22 @@ function getFilesContent() {
     }
 
     return files;
+}
+
+async function downloadFiles() {
+    const tar_writer = new TarWriter();
+    tar_writer.addFolder('wicked');
+    for (let child of getFiles(document.getElementById('file-container'))) {
+        tar_writer.addFile('wicked/' + child.querySelector('#file-name').value, child.querySelector('#file-content-textarea').value);
+    }
+    const output = await tar_writer.write();
+    const fileURL = URL.createObjectURL(output);
+    const downloadLink = document.createElement('a');
+    downloadLink.href = fileURL;
+    downloadLink.download = 'wicked.tar';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    URL.revokeObjectURL(fileURL);
 }
 
 function autoResize(textarea) {
@@ -215,11 +237,11 @@ function clearFiles() {
 }
 
 function downloadURL(url, name) {
-    let link = document.createElement("a");
+    const link = document.createElement("a");
     link.download = name;
     link.href = url;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    delete link;
+    URL.revokeObjectURL(link);
 }
